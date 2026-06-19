@@ -1,0 +1,69 @@
+#include <string>
+#include <vector>
+#include <unordered_set>
+#include <unordered_map>
+#include <queue>
+#include <algorithm>
+class Solution {
+private:
+    std::unordered_map<std::string, std::vector<std::string>> adj; 
+    std::vector<std::vector<std::string>> results;
+    void backtrack(const std::string& current, const std::string& beginWord, std::vector<std::string>& path) {
+        if (current == beginWord) {
+            std::vector<std::string> valid_path = path;
+            std::reverse(valid_path.begin(), valid_path.end());
+            results.push_back(valid_path);
+            return;
+        }
+        for (const std::string& parent : adj[current]) {
+            path.push_back(parent);
+            backtrack(parent, beginWord, path);
+            path.pop_back(); 
+        }
+    }
+public:
+    std::vector<std::vector<std::string>> findLadders(std::string beginWord, std::string endWord, std::vector<std::string>& wordList) {
+        std::unordered_set<std::string> dict(wordList.begin(), wordList.end());
+        if (dict.find(endWord) == dict.end()) return {};
+        std::unordered_map<std::string, int> visited_depth; 
+        std::queue<std::string> q;
+        q.push(beginWord);
+        visited_depth[beginWord] = 0;
+        bool found_shortest = false;
+        while (!q.empty() && !found_shortest) {
+            int level_size = q.size();
+            std::unordered_set<std::string> local_visited; 
+            for (int i = 0; i < level_size; ++i) {
+                std::string word = q.front();
+                q.pop();
+                int current_depth = visited_depth[word];
+                std::string next_word = word;
+                for (size_t pos = 0; pos < next_word.length(); ++pos) {
+                    char original_char = next_word[pos];
+                    for (char c = 'a'; c <= 'z'; ++c) {
+                        if (c == original_char) continue;
+                        next_word[pos] = c;
+                        if (dict.find(next_word) != dict.end()) {
+                            if (visited_depth.find(next_word) == visited_depth.end() || visited_depth[next_word] == current_depth + 1) {
+                                if (visited_depth.find(next_word) == visited_depth.end()) {
+                                    visited_depth[next_word] = current_depth + 1;
+                                    q.push(next_word);
+                                }
+                                adj[next_word].push_back(word); 
+                                if (next_word == endWord) {
+                                    found_shortest = true;
+                                }
+                            }
+                        }
+                    }
+                    next_word[pos] = original_char; 
+                }
+            }
+        }
+        if (found_shortest) {
+            std::vector<std::string> path = {endWord};
+            backtrack(endWord, beginWord, path);
+        }
+        return results;
+    }
+};
