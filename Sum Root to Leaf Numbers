@@ -1,0 +1,16 @@
+#include <algorithm>
+class Solution {
+private:
+    int calculateSum(TreeNode* node, int current_sum) {
+        if (node == nullptr) return 0;
+        current_sum = current_sum * 10 + node->val;
+        if (node->left == nullptr && node->right == nullptr) {
+            return current_sum;
+        }
+        return calculateSum(node->left, current_sum) + calculateSum(node->right, current_sum);
+    }
+public:
+    int sumNumbers(TreeNode* root) {
+        return calculateSum(root, 0);
+    }
+};
