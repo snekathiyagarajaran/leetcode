@@ -1,0 +1,39 @@
+#include <string>
+#include <vector>
+#include <unordered_set>
+#include <unordered_map>
+class Solution {
+private:
+    std::unordered_map<std::string, std::vector<std::string>> memo;
+    std::vector<std::string> dfs(const std::string& s, const std::unordered_set<std::string>& dict) {
+        if (memo.find(s) != memo.end()) {
+            return memo[s];
+        }
+        if (s.empty()) {
+            return {""};
+        }    
+        std::vector<std::string> sentences;
+        for (int i = 1; i <= s.length(); ++i) {
+            std::string prefix = s.substr(0, i){
+            if (dict.find(prefix) != dict.end()) {
+                std::string suffix = s.substr(i);
+                std::vector<std::string> suffix_sentences = dfs(suffix, dict);
+                for (const std::string& sentence : suffix_sentences) {
+                    if (sentence.empty()) {
+                        sentences.push_back(prefix); 
+                    } else {
+                        sentences.push_back(prefix + " " + sentence); 
+                    }
+                }
+            }
+        }
+        memo[s] = sentences;
+        return sentences;
+    }
+public:
+    std::vector<std::string> wordBreak(std::string s, std::vector<std::string>& wordDict) {
+        memo.clear();
+        std::unordered_set<std::string> dict(wordDict.begin(), wordDict.end());
+        return dfs(s, dict);
+    }
+};
