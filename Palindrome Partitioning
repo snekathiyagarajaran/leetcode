@@ -1,0 +1,37 @@
+#include <string>
+#include <vector>
+class Solution {
+private:
+    std::vector<std::vector<std::string>> result;
+    bool isPalindrome(const std::string& s, int start, int end) {
+        while (start < end) {
+            if (s[start] != s[end]) {
+                return false;
+            }
+            start++;
+            end--;
+        }
+        return true;
+    }
+    void backtrack(const std::string& s, int start, std::vector<std::string>& current_path) {
+        if (start == s.length()) {
+            result.push_back(current_path);
+            return;
+        }
+        for (int end = start; end < s.length(); ++end) {
+            if (isPalindrome(s, start, end)) {
+                std::string substring = s.substr(start, end - start + 1);
+                current_path.push_back(substring);
+                backtrack(s, end + 1, current_path);
+                current_path.pop_back();
+            }
+        }
+    }
+public:
+    std::vector<std::vector<std::string>> partition(std::string s) {
+        result.clear();
+        std::vector<std::string> current_path;
+        backtrack(s, 0, current_path);
+        return result;
+    }
+};
