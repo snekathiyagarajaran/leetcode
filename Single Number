@@ -1,0 +1,11 @@
+#include <vector>
+class Solution {
+public:
+    int singleNumber(std::vector<int>& nums) {
+        int unique_num = 0;
+        for (int num : nums) {
+            unique_num ^= num;
+        }
+        return unique_num;
+    }
+};
