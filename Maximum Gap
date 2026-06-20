@@ -1,0 +1,36 @@
+#include <vector>
+#include <algorithm>
+#include <cmath>
+class Solution {
+public:
+    int maximumGap(std::vector<int>& nums) {
+        int n = nums.size();
+        if (n < 2) return 0;
+        int min_val = nums[0];
+        int max_val = nums[0];
+        for (int num : nums) {
+            min_val = std::min(min_val, num);
+            max_val = std::max(max_val, num);
+        }
+        if (max_val == min_val) return 0;
+        int bucket_size = std::max(1, (max_val - min_val) / (n - 1));
+        int bucket_count = (max_val - min_val) / bucket_size + 1;
+        std::vector<bool> has_element(bucket_count, false);
+        std::vector<int> bucket_mins(bucket_count, INT_MAX);
+        std::vector<int> bucket_maxs(bucket_count, INT_MIN);
+        for (int num : nums) {
+            int bucket_idx = (num - min_val) / bucket_size;
+            has_element[bucket_idx] = true;
+            bucket_mins[bucket_idx] = std::min(bucket_mins[bucket_idx], num);
+            bucket_maxs[bucket_idx] = std::max(bucket_maxs[bucket_idx], num);
+        }
+        int max_gap = 0;
+        int previous_max = min_val;
+        for (int i = 0; i < bucket_count; ++i) {
+            if (!has_element[i]) continue; 
+            max_gap = std::max(max_gap, bucket_mins[i] - previous_max);
+            previous_max = bucket_maxs[i];
+        }
+        return max_gap;
+    }
+};
