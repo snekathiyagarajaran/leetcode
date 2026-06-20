@@ -1,0 +1,35 @@
+#include <string>
+#include <unordered_map>
+#include <cmath>
+class Solution {
+public:
+    std::string fractionToDecimal(int numerator, int denominator) {
+        if (numerator == 0) return "0";
+        std::string result = "";
+        if ((numerator < 0) ^ (denominator < 0)) {
+            result += "-";
+        }
+        long long num = std::abs((long long)numerator);
+        long long den = std::abs((long long)denominator);
+        result += std::to_string(num / den);
+        long long remainder = num % den;
+        if (remainder == 0) {
+            return result; 
+        }
+        result += ".";
+        std::unordered_map<long long, int> remainder_map;
+        while (remainder != 0) {
+            if (remainder_map.find(remainder) != remainder_map.end()) {
+                int insert_pos = remainder_map[remainder];
+                result.insert(insert_pos, "(");
+                result += ")";
+                break;
+            }
+            remainder_map[remainder] = result.length();
+            remainder *= 10;
+            result += std::to_string(remainder / den);
+            remainder %= den;
+        }
+        return result;
+    }
+};
